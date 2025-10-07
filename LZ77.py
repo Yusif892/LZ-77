@@ -38,11 +38,44 @@ class LZ77:
         return bestIndex
             
 
+    
+    
     # This method takes a string sequence and returns a list of tags 
     def compress(self) -> list[Tag]:
-        # your implementation 
-        pass
-    
+        tags = list()
+        searchWindowStart = -self.windowSize; searchWindowEnd = -1
+        lookWindowStart = 0; lookWindowEnd = self.windowSize - 1
+        while (lookWindowStart < len(self.sequence)):
+            temp = ""
+            for i in range(lookWindowStart, lookWindowEnd+1):
+                start = max(0, searchWindowStart), end = max(0, searchWindowEnd)
+                matchIndex = self.sequence[start : end + 1].find(temp)
+                if (self.sequence[start : end + 1].find(temp + self.sequence[i]) != -1):
+                    temp += self.sequence[i]
+                    continue
+                else : 
+                    # Special case for the first occurence of a character
+                    if (len(temp) == 0):
+                        newTag = Tag(0, 0, self.sequence[i])
+                    else :
+                        position = lookWindowStart - matchIndex
+                        newTag = Tag(position, len(temp), self.sequence[i])
+                        
+                    advance = len(temp) + 1
+                    searchWindowStart += advance; searchWindowEnd += advance
+                    lookWindowStart += advance; lookWindowEnd += advance
+                    tags.append(newTag) 
+                    temp = ""
+                    # stop this iteration to search in the next window
+                    break
+            else :
+                # check if the whole look a head matched the search buffer
+                if (len(temp)):
+                    position = lookWindowStart - matchIndex
+                    newTag = Tag(position, len(temp), self.sequence[i+1])
+        
+        return tags
+
     # This method takes a list of tage and returns the original sequence 
     def deCompress(self, tags: list[Tag]) -> str:
         # your implementation 

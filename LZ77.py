@@ -6,9 +6,9 @@ class Tag:
 
 
 class LZ77:
-    def __init__(self,sequence, windowSize: int = 10):
-        self.windowSize = windowSize
+    def __init__(self, sequence):
         self.sequence = sequence
+        self.windowSize = min(10, len(sequence) // 3)
     
     
     # This method searches the look ahead window to find the longest match
@@ -43,14 +43,16 @@ class LZ77:
     # This method takes a string sequence and returns a list of tags 
     def compress(self) -> list[Tag]:
         tags = list()
-        searchWindowStart = -self.windowSize; searchWindowEnd = -1
+        searchWindowStart = -self.windowSize; searchWindowEnd = 0
         lookWindowStart = 0; lookWindowEnd = self.windowSize - 1
         while (lookWindowStart < len(self.sequence)):
-            temp = ""
+            temp = '' 
             for i in range(lookWindowStart, lookWindowEnd+1):
-                start = max(0, searchWindowStart), end = max(0, searchWindowEnd)
-                matchIndex = self.sequence[start : end + 1].find(temp)
-                if (self.sequence[start : end + 1].find(temp + self.sequence[i]) != -1):
+                start = max(0, searchWindowStart); end = max(0, searchWindowEnd)
+                matchIndex = self.sequence.find(temp, start, end) if (len(temp)) else -1
+                if (i >= len(self.sequence)):
+                    break
+                if (self.sequence.find(temp + self.sequence[i], start, end) != -1):
                     temp += self.sequence[i]
                     continue
                 else : 
@@ -68,11 +70,14 @@ class LZ77:
                     temp = ""
                     # stop this iteration to search in the next window
                     break
-            else :
+            if (len(temp)) :
                 # check if the whole look a head matched the search buffer
-                if (len(temp)):
                     position = lookWindowStart - matchIndex
-                    newTag = Tag(position, len(temp), self.sequence[i+1])
+                    newTag = Tag(position, len(temp), None if i >= len(self.sequence) else self.sequence[i+1])
+                    advance = len(temp) + 1
+                    searchWindowStart += advance; searchWindowEnd += advance
+                    lookWindowStart += advance; lookWindowEnd += advance
+                    tags.append(newTag) 
         
         return tags
 
@@ -84,3 +89,4 @@ class LZ77:
     # This method calculates the size after the compression
     def calculateTagsSize(tags: list[Tag]) -> int:
         pass
+    

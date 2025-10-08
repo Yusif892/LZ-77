@@ -1,3 +1,4 @@
+import math
 class Tag:
     def __init__(self, position: int, length: int, nextSymbol: str):
         self.position = position
@@ -84,10 +85,35 @@ class LZ77:
 
     # This method takes a list of tage and returns the original sequence 
     def deCompress(self, tags: list[Tag]) -> str:
-        # your implementation 
-        pass
+        Data = []
+
+        for tag in tags:
+            start = len(Data) - tag.position
+            for i in range(tag.length):
+                Data.append(Data[start + i])
+
+            if tag.nextSymbol != '':
+                Data.append(tag.nextSymbol)
+
+        return ' '.join(Data)
 
     # This method calculates the size after the compression
-    def calculateTagsSize(tags: list[Tag]) -> int:
-        pass
+    def calculateTagsSize(self, tags: list[Tag]) -> int:
+        if not tags:
+            return 0
+        max_pos = max(tag.position for tag in tags)
+        max_len = max(tag.length for tag in tags)
+        
+        if max_pos == 0:
+            pos_bits = 1
+        else:
+            pos_bits = math.floor(math.log2(max_pos)) + 1
+        if max_len == 0:
+            len_bits = 1
+        else:
+            len_bits = math.floor(math.log2(max_len)) + 1
+
+        symbol_bits = 8
+
+        return pos_bits + len_bits + symbol_bits
     

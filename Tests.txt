@@ -1,0 +1,12 @@
+# lz = LZ77("ABAABABAABBBBBBBBBBBBA")
+# lz = LZ77("ABBBAB")
+# lz = LZ77("ABABAB")
+# lz = LZ77("ABAABABABABABABABABABA")
+
+
+tags = lz.compress()
+
+print (lz.deCompress(tags))
+
+for tag in tags:
+    print(f'< {tag.position} {tag.length} {tag.nextSymbol} >')

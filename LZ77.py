@@ -10,7 +10,7 @@ class LZ77:
     def __init__(self, sequence):
         self.sequence = sequence
         # self.windowSize = min(10, len(sequence) // 3)
-        self.windowSize = 10
+        self.windowSize = 12
     
     
     # This method searches the look ahead window to find the longest match

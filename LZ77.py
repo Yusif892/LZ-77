@@ -156,10 +156,14 @@ def main():
 
         elif choice == "4":
             if not tags:
-                print("No tags to calculate size for!")
+                print("No tags to calculate size for !")
                 continue
+
             size = lz.calculateTagsSize(tags)
-            print(f"\nCompressed tags size: {size} bits")
+            original_size = len(lz.sequence) * 8
+            print(f"\nOriginal sequence size : {original_size} bits")
+            print(f"Compressed tags size   : {size} bits")
+
 
     
 

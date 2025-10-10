@@ -41,7 +41,7 @@ class LZ77:
             longestMatch = 0
             if (lookWindowStart + 1 < lookWindowEnd and lookWindowEnd > 2):
                 if (self.sequence[lookWindowStart:lookWindowStart+2] == self.sequence[lookWindowStart-2:lookWindowStart]):
-                    longestMatch = self.findLongestMatch(self.sequence[lookWindowStart:lookWindowStart+2],lookWindowStart,lookWindowEnd)
+                    longestMatch = self.findLongestMatch(self.sequence[lookWindowStart:lookWindowStart+2],lookWindowStart, min(lookWindowEnd, len(self.sequence))-1)
             
             for i in range(lookWindowStart, lookWindowEnd+1):
                 start = max(0, searchWindowStart); end = max(0, searchWindowEnd)
@@ -62,14 +62,14 @@ class LZ77:
                             newTag = Tag(position, len(temp), self.sequence[i])
                             advance = len(temp) + 1
                         else:
-                            newTag = Tag(2, longestMatch, "" if lookWindowStart + longestMatch > len(self.sequence) else self.sequence[lookWindowStart + longestMatch])
+                            newTag = Tag(2, longestMatch, "" if lookWindowStart + longestMatch >= len(self.sequence) else self.sequence[lookWindowStart + longestMatch])
                             advance = longestMatch + 1
                         
                     searchWindowStart += advance; searchWindowEnd += advance
                     lookWindowStart += advance; lookWindowEnd += advance
                     tags.append(newTag) 
                     temp = ""
-                    lookWindowStart = min(lookWindowStart, len(self.sequence)-1); lookWindowEnd = min(lookWindowEnd, len(self.sequence)-1)
+                    lookWindowStart = min(lookWindowStart, len(self.sequence)); lookWindowEnd = min(lookWindowEnd, len(self.sequence))
                     # stop this iteration to search in the next window
                     break
             if (len(temp)) :

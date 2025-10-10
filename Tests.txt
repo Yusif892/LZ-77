@@ -1,12 +1,53 @@
-# lz = LZ77("ABAABABAABBBBBBBBBBBBA")
-# lz = LZ77("ABBBAB")
-# lz = LZ77("ABABAB")
-# lz = LZ77("ABAABABABABABABABABABA")
+tests = [
+    "",  # empty input
+    "a",  # single character
+    "aaaaaa",  # repeated single char
+    "abababab",  # repeated pattern
+    "abcdef",  # no repetition
+    "abcabcabcabc",  # repeating sequence longer than lookahead
+]
+tests += [
+    "a" * 100,  # large repetition
+    "abc" * 30,  # moderate repetition
+    "ab" * 200 + "ac" * 200,  # repeated but with slight variation
+    "abcdefghij" * 10,  # test dictionary sliding properly
+]
+tests += [
+    "abcdefghijabcdefghijabcdefghij",  # window-size repetition
+    "abcdefghij" * 3 + "abcdefghijk",  # just beyond window
+]
+import random
+random.seed(42)
+random_string = ''.join(random.choice("abcde") for _ in range(100))
+
+tests += [
+    "abcde" * 10 + "fghij" * 5,  # clear block repetition
+    random_string,  # random (should compress poorly)
+]
+tests += [
+    "    ",  # multiple spaces
+    "Hello, world!",  # punctuation
+    "This  has  double  spaces",  # multiple consecutive spaces
+    "Line1\nLine2\nLine3",  # newlines
+]
+tests += [
+    "مرحبا",  # Arabic
+    "你好世界",  # Chinese
+    "こんにちは世界",  # Japanese
+    "😀😁😂🤣😃😄",  # emojis
+]
+tests += [
+    "A" * 10000,  # single character repeated a lot
+    "ABCD" * 2500,  # large repetitive data
+]
 
 
-tags = lz.compress()
+def test_lz77():
+    for i, text in enumerate(tests, 1):
+        lz77 = LZ77(text)
+        compressed = lz77.compress()
+        decompressed = lz77.deCompress(compressed)
+        assert decompressed == text, f"❌ Test {i} failed!\nOriginal: {text}\nDecompressed: {decompressed}"
+        print(f"✅ Test {i} passed — length: {len(text)} compressed to {len(compressed)} tags")
 
-print (lz.deCompress(tags))
-
-for tag in tags:
-    print(f'< {tag.position} {tag.length} {tag.nextSymbol} >')
+test_lz77()

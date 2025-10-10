@@ -116,4 +116,89 @@ class LZ77:
         symbol_bits = 8
 
         return pos_bits + len_bits + symbol_bits
+
+def main():
+    lz = None
+    tags = None
+
+    while True:
+        print("\n...LZ77 ALGORITHM....")
+        print("1. Enter sequence")
+        print("2. Compress sequence")
+        print("3. Decompress sequence")
+        print("4. Show tags size")
+        print("5. Enter tags manually to decompress")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == "1":
+            sequence = input("Enter your sequence: ")
+            lz = LZ77(sequence)
+            tags = None
+            print("Sequence stored successfully.")
+
+        elif choice == "2":
+            if not lz:
+                print("Please enter a sequence first!")
+                continue
+            tags = lz.compress()
+            print("\nCompressed successfully. Tags:")
+            for i, tag in enumerate(tags):
+                print(f"Tag {i+1}: <{tag.position}, {tag.length}, {tag.nextSymbol}>")
+
+        elif choice == "3":
+            if not tags:
+                print("You need to compress a sequence first!")
+                continue
+            decompressed = lz.deCompress(tags)
+            print(f"\nDecompressed text: {decompressed}")
+
+        elif choice == "4":
+            if not tags:
+                print("No tags to calculate size for!")
+                continue
+            size = lz.calculateTagsSize(tags)
+            print(f"\nCompressed tags size: {size} bits")
+
     
+
+        elif choice == "5":
+            manual_tags = []
+            print("Enter your tags manually.")
+            print("Type 'done' when finished.\n")
+            while True:
+                position_input = input("Enter position (or 'done' to finish): ")
+                if position_input.lower() == "done":
+                    break
+                try:
+                    position = int(position_input)
+                    length = int(input("Enter length: "))
+                    nextSymbol = input("Enter next symbol (press Enter if empty): ")
+                    tag = Tag(position, length, nextSymbol)
+                    manual_tags.append(tag)
+                    print(f"Added tag: <{position}, {length}, {nextSymbol}>")
+                except ValueError:
+                    print("Invalid input. Please enter valid numbers for position and length.")
+                    continue
+
+            if not manual_tags:
+                print("No tags entered.")
+                continue
+
+            if not lz:
+                lz = LZ77("")
+
+            decompressed = lz.deCompress(manual_tags)
+            print("\nDecompressed text:", decompressed)
+            
+        elif choice == "6":
+            print("Exiting program...")
+            break
+
+        else:
+            print("Invalid choice. Please choose from 1 to 6.")
+
+
+if __name__ == "__main__":
+    main()
